@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DeepSeek 对话</title>
+    <style>
+        /* 这里可以添加一些简单的样式，让界面在手机上更好看 */
+        body { font-family: -apple-system, sans-serif; padding: 20px; background: #f5f5f5; }
+        #chatbox { height: 70vh; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; background: white; }
+        .msg { margin: 10px 0; }
+        .user { text-align: right; color: blue; }
+        .assistant { text-align: left; color: green; }
+        #input-area { display: flex; margin-top: 10px; }
+        #input-area input { flex: 1; padding: 10px; border: 1px solid #ccc; }
+        #input-area button { padding: 10px 20px; background: #007AFF; color: white; border: none; }
+        #api-key-input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <h3>🤖 DeepSeek 对话</h3>
+    <!-- 安全输入：在这里输入你的 API Key -->
+    <input type="password" id="api-key-input" placeholder="在此输入你的 DeepSeek API Key..." />
+
+    <div id="chatbox"></div>
+    <div id="input-area">
+        <input type="text" id="user-input" placeholder="输入你的问题..." />
+        <button onclick="sendMessage()">发送</button>
+    </div>
+
+    <script>
+        // 用于存储对话历史
+        let messages = [];
+
+        async function sendMessage() {
+            const apiKey = document.getElementById('api-key-input').value;
+            if (!apiKey) {
+                alert('请先输入你的 API Key！');
+                return;
+            }
+
+            const userInput = document.getElementById('user-input');
+            const userMessage = userInput.value.trim();
+            if (!userMessage) return;
+
+            // 1. 显示用户消息
+            displayMessage('user', userMessage);
+            // 2. 将用户消息加入历史
+            messages.push({ role: 'user', content: userMessage });
+            userInput.value = '';
+
+            // 3. 显示“正在思考...”提示
+            displayMessage('assistant', '思考中...', true);
+
+            try {
+                // 4. 调用 DeepSeek API
+                // 官方 API 地址和模型请参考最新文档 [citation:2][citation:10]
+                const response = await fetch('https://api.deepseek.com/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'deepseek-v4-pro', // 推荐使用最新模型 [citation:2]
+                        messages: messages,
+                        stream: false // 简单起见，使用非流式
+                    })
+                });
+
+                const data = await response.json();
+
+                // 5. 获取助手回复
+                const assistantReply = data.choices[0].message.content;
+                // 6. 将助手回复加入历史
+                messages.push({ role: 'assistant', content: assistantReply });
+
+                // 7. 更新界面，替换掉“思考中...”的提示
+                updateLastAssistantMessage(assistantReply);
+
+            } catch (error) {
+                console.error('API 调用失败:', error);
+                alert('与 DeepSeek 通信失败，请检查网络或 API Key。');
+            }
+        }
+
+        // 辅助函数：在聊天框中显示消息
+        function displayMessage(role, content, isTemp = false) {
+            const chatbox = document.getElementById('chatbox');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `msg ${role}`;
+            if (isTemp) msgDiv.id = 'temp-msg';
+            msgDiv.textContent = content;
+            chatbox.appendChild(msgDiv);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        // 辅助函数：更新最后一条临时消息
+        function updateLastAssistantMessage(content) {
+            const tempMsg = document.getElementById('temp-msg');
+            if (tempMsg) {
+                tempMsg.textContent = content;
+                tempMsg.id = ''; // 移除临时ID
+            }
+        }
+    </script>
+</body>
+</html>
