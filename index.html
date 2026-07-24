@@ -1,25 +1,168 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LabNote · 实验记录助手</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="LabNote 实验记录助手，用于管理实验流程、记录和统计数据。">
+    <title>LabNote · 实验记录助手</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="app-shell">
-<aside class="sidebar"><div class="brand">🧪 <strong>LabNote</strong><small>实验记录助手</small></div><nav><a class="active">工作台</a><a>实验记录</a><a>数据统计</a><a>设置</a></nav></aside>
-<main class="main-content">
-<section class="welcome"><div><p>LABORATORY WORKSPACE</p><h1>欢迎回来，开始记录今天的实验</h1><span>集中管理样本、操作流程和实验结果。</span></div><time id="currentDate"></time></section>
-<section class="stats-grid"><div>总记录数<strong id="totalRecords">0</strong></div><div>本周新增<strong id="weeklyRecords">0</strong></div><div>最近实验日期<strong id="latestExperimentDate">暂无</strong></div></section>
-<div class="content-grid">
-<section class="panel form-panel"><h2>新建实验记录</h2><form id="recordForm">
-<div class="row"><label>样本名称<input id="sampleName" required placeholder="例如：HepG2细胞球A1"></label><label>实验日期<input id="experimentDate" type="date" required></label></div>
-<label>实验操作<textarea id="experimentOperation" rows="8" required placeholder="请输入实验步骤、实验条件、处理方法、关键操作参数等..."></textarea></label>
-<label>实验备注<textarea id="experimentNotes" rows="4" placeholder="记录观察结果或下一步计划"></textarea></label>
-<button type="submit">＋ 保存实验记录</button></form></section>
-<section class="panel records-panel"><h2>最近实验记录</h2><span id="recordCountLabel">0 条记录</span><div id="emptyState">暂无实验记录</div><div id="recordsList"></div></section>
-</div>
-</main></div>
-<div id="toast"></div><script src="script.js"></script>
-</body></html>
+    <div class="app-shell">
+        <aside class="sidebar" aria-label="主导航">
+            <div class="brand">
+                <span class="brand-mark" aria-hidden="true">🧪</span>
+                <span><strong>LabNote</strong><small>实验记录助手</small></span>
+            </div>
+
+            <nav class="sidebar-nav" aria-label="功能导航">
+                <button class="nav-button active" type="button" data-view="dashboard" aria-controls="view-dashboard" aria-selected="true">
+                    <span class="nav-icon" aria-hidden="true">▦</span><span>工作台</span>
+                </button>
+                <button class="nav-button" type="button" data-view="records" aria-controls="view-records" aria-selected="false">
+                    <span class="nav-icon" aria-hidden="true">▤</span><span>实验记录</span>
+                </button>
+                <button class="nav-button" type="button" data-view="statistics" aria-controls="view-statistics" aria-selected="false">
+                    <span class="nav-icon" aria-hidden="true">▥</span><span>数据统计</span>
+                </button>
+                <button class="nav-button" type="button" data-view="settings" aria-controls="view-settings" aria-selected="false">
+                    <span class="nav-icon" aria-hidden="true">⚙</span><span>设置</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <span class="status-dot" aria-hidden="true"></span>
+                <span><strong>本地数据已启用</strong><small>记录保存在当前浏览器</small></span>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="topbar">
+                <p id="viewBreadcrumb">工作台</p>
+                <time id="currentDate" aria-label="当前日期"></time>
+            </div>
+
+            <section class="app-view active" id="view-dashboard" data-view-panel="dashboard">
+                <header class="welcome">
+                    <div>
+                        <p class="eyebrow">LABORATORY WORKSPACE</p>
+                        <h1>欢迎回来，开始记录今天的实验</h1>
+                        <span>集中管理样本、操作流程和实验结果。</span>
+                    </div>
+                </header>
+
+                <section class="stats-grid" aria-label="实验数据概览">
+                    <article class="stat-card"><span>总记录数</span><strong id="totalRecords">0</strong><small>全部实验档案</small></article>
+                    <article class="stat-card"><span>本周新增</span><strong id="weeklyRecords">0</strong><small>按创建时间统计</small></article>
+                    <article class="stat-card"><span>最近实验日期</span><strong class="date-value" id="latestExperimentDate">暂无</strong><small>最近一次实验</small></article>
+                </section>
+
+                <div class="content-grid">
+                    <section class="panel form-panel" aria-labelledby="newRecordTitle">
+                        <div class="panel-heading">
+                            <div><p class="eyebrow">NEW RECORD</p><h2 id="newRecordTitle">新建实验记录</h2></div>
+                            <span class="badge">必填</span>
+                        </div>
+                        <form id="recordForm" novalidate>
+                            <div class="form-row">
+                                <label class="form-field">样本名称
+                                    <input id="sampleName" type="text" maxlength="80" required placeholder="例如：HepG2 细胞球 A1" autocomplete="off">
+                                </label>
+                                <label class="form-field">实验日期
+                                    <input id="experimentDate" type="date" required>
+                                </label>
+                            </div>
+                            <label class="form-field">实验操作
+                                <textarea id="experimentOperation" rows="8" maxlength="3000" required placeholder="请输入实验步骤、实验条件、处理方法、关键操作参数等……"></textarea>
+                                <small>用于记录完整实验流程与关键参数</small>
+                            </label>
+                            <label class="form-field">实验备注
+                                <textarea id="experimentNotes" rows="4" maxlength="1000" placeholder="记录观察结果、异常情况或下一步计划……"></textarea>
+                            </label>
+                            <button class="primary-button" type="submit">＋ 保存实验记录</button>
+                        </form>
+                    </section>
+
+                    <section class="panel records-panel" aria-labelledby="recentRecordsTitle">
+                        <div class="panel-heading compact-heading">
+                            <div><p class="eyebrow">RECENT ACTIVITY</p><h2 id="recentRecordsTitle">最近实验记录</h2></div>
+                            <span class="count-badge" id="recordCountLabel">0 条记录</span>
+                        </div>
+                        <div class="empty-state" id="emptyState">
+                            <span aria-hidden="true">🧪</span><strong>暂无实验记录</strong><p>保存记录后，最新内容会显示在这里。</p>
+                        </div>
+                        <div class="records-list compact-list" id="recordsList" aria-live="polite"></div>
+                    </section>
+                </div>
+            </section>
+
+            <section class="app-view" id="view-records" data-view-panel="records" hidden>
+                <header class="view-header">
+                    <div><p class="eyebrow">EXPERIMENT ARCHIVE</p><h1>实验记录</h1><span>查找、查看和管理全部实验档案。</span></div>
+                    <button class="secondary-button" type="button" data-go-view="dashboard">＋ 新建记录</button>
+                </header>
+                <section class="panel archive-panel">
+                    <div class="archive-toolbar">
+                        <label class="search-field" for="recordSearch">搜索记录
+                            <input id="recordSearch" type="search" placeholder="搜索样本名称、实验操作或备注">
+                        </label>
+                        <span id="allRecordCount">0 条记录</span>
+                    </div>
+                    <div class="empty-state" id="archiveEmptyState">
+                        <span aria-hidden="true">⌕</span><strong>没有找到记录</strong><p>尝试更换关键词，或返回工作台新建实验记录。</p>
+                    </div>
+                    <div class="records-list full-list" id="allRecordsList" aria-live="polite"></div>
+                </section>
+            </section>
+
+            <section class="app-view" id="view-statistics" data-view-panel="statistics" hidden>
+                <header class="view-header">
+                    <div><p class="eyebrow">DATA OVERVIEW</p><h1>数据统计</h1><span>快速了解实验记录数量、时间分布和常用样本。</span></div>
+                </header>
+                <section class="stats-grid statistics-grid" aria-label="详细统计">
+                    <article class="stat-card"><span>总记录数</span><strong id="statisticsTotal">0</strong><small>当前浏览器内全部记录</small></article>
+                    <article class="stat-card"><span>本周新增</span><strong id="statisticsWeekly">0</strong><small>本周创建的实验记录</small></article>
+                    <article class="stat-card"><span>不同样本</span><strong id="statisticsSamples">0</strong><small>按样本名称去重</small></article>
+                </section>
+                <div class="analytics-grid">
+                    <section class="panel chart-panel">
+                        <div class="panel-heading"><div><p class="eyebrow">SIX MONTHS</p><h2>近六个月实验量</h2></div></div>
+                        <div class="bar-chart" id="monthlyChart" aria-label="近六个月实验记录柱状图"></div>
+                    </section>
+                    <section class="panel breakdown-panel">
+                        <div class="panel-heading"><div><p class="eyebrow">TOP SAMPLES</p><h2>常用样本</h2></div></div>
+                        <div id="sampleBreakdown"></div>
+                    </section>
+                </div>
+            </section>
+
+            <section class="app-view" id="view-settings" data-view-panel="settings" hidden>
+                <header class="view-header">
+                    <div><p class="eyebrow">LOCAL SETTINGS</p><h1>设置</h1><span>管理当前浏览器中的实验数据。</span></div>
+                </header>
+                <div class="settings-grid">
+                    <section class="panel settings-card">
+                        <p class="eyebrow">STORAGE</p><h2>本地存储</h2>
+                        <p>LabNote 使用 localStorage 保存实验记录，数据不会自动上传到服务器。</p>
+                        <dl class="storage-details">
+                            <div><dt>记录数量</dt><dd id="storageRecordCount">0</dd></div>
+                            <div><dt>预计占用</dt><dd id="storageSize">0 KB</dd></div>
+                        </dl>
+                    </section>
+                    <section class="panel settings-card">
+                        <p class="eyebrow">DATA ACTIONS</p><h2>数据管理</h2>
+                        <p>可导出 JSON 备份，或清空当前浏览器中的所有实验记录。</p>
+                        <div class="settings-actions">
+                            <button class="secondary-button" id="exportRecordsButton" type="button">导出 JSON 备份</button>
+                            <button class="danger-button" id="clearRecordsButton" type="button">清空全部记录</button>
+                        </div>
+                    </section>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="script.js"></script>
+</body>
+</html>
