@@ -6,6 +6,7 @@
     <meta name="description" content="LabNote 实验记录助手，用于管理实验流程、记录和统计数据。">
     <title>LabNote · 实验记录助手</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="excel-table.css">
 </head>
 <body>
     <div class="app-shell">
@@ -97,14 +98,35 @@
                                         <span id="methodPreviewDate"></span>
                                     </div>
                                     <p id="methodPreviewText"></p>
+                                    <div class="method-preview-table" id="methodPreviewTable" hidden></div>
                                 </div>
                                 <button class="reuse-button" id="copyOperationButton" type="button" disabled>复制到实验操作</button>
                             </section>
 
                             <label class="form-field">实验操作
-                                <textarea id="experimentOperation" rows="8" maxlength="3000" required placeholder="请输入实验步骤、实验条件、处理方法、关键操作参数等……"></textarea>
-                                <small>用于记录完整实验流程与关键参数</small>
+                                <textarea id="experimentOperation" rows="8" maxlength="3000" placeholder="请输入实验步骤、实验条件、处理方法、关键操作参数等……"></textarea>
+                                <small>可输入文字，也可在下方粘贴 Excel 表格；二者至少填写一项</small>
                             </label>
+
+                            <section class="excel-panel" aria-labelledby="excelPasteTitle">
+                                <div class="excel-panel-heading">
+                                    <div>
+                                        <strong id="excelPasteTitle">粘贴 Excel 表格</strong>
+                                        <small>在 Excel 中复制单元格区域，然后点击下方区域并按 Ctrl + V。</small>
+                                    </div>
+                                    <span class="excel-table-status" id="excelTableStatus">尚未添加表格</span>
+                                </div>
+                                <div class="excel-paste-zone" id="excelPasteZone" tabindex="0" role="button" aria-label="粘贴 Excel 表格">
+                                    <span class="paste-icon" aria-hidden="true">▦</span>
+                                    <strong>点击此处后粘贴 Excel 单元格</strong>
+                                    <small>支持多行、多列以及带换行的单元格，粘贴后可直接编辑</small>
+                                </div>
+                                <div class="excel-table-preview" id="excelTablePreview" aria-live="polite" hidden></div>
+                                <div class="excel-actions">
+                                    <button class="excel-clear-button" id="clearExcelTableButton" type="button" disabled>移除表格</button>
+                                </div>
+                            </section>
+
                             <label class="form-field">实验备注
                                 <textarea id="experimentNotes" rows="4" maxlength="1000" placeholder="记录观察结果、异常情况或下一步计划……"></textarea>
                             </label>
@@ -133,7 +155,7 @@
                 <section class="panel archive-panel">
                     <div class="archive-toolbar">
                         <label class="search-field" for="recordSearch">搜索记录
-                            <input id="recordSearch" type="search" placeholder="搜索样本名称、实验操作或备注">
+                            <input id="recordSearch" type="search" placeholder="搜索样本名称、实验操作、表格内容或备注">
                         </label>
                         <span id="allRecordCount">0 条记录</span>
                     </div>
@@ -193,5 +215,6 @@
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script src="script.js"></script>
+    <script src="excel-table.js"></script>
 </body>
 </html>
