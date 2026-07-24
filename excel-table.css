@@ -1,0 +1,220 @@
+.excel-panel {
+    margin: -2px 0 18px;
+    padding: 16px;
+    border: 1px solid #dbe2f0;
+    border-radius: 14px;
+    background: #fbfcff;
+}
+
+.excel-panel-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.excel-panel-heading strong,
+.excel-panel-heading small {
+    display: block;
+}
+
+.excel-panel-heading strong {
+    color: #343d56;
+    font-size: 14px;
+}
+
+.excel-panel-heading small {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.excel-table-status {
+    flex: 0 0 auto;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: var(--primary-soft);
+    color: var(--primary-dark);
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.excel-paste-zone {
+    display: grid;
+    min-height: 104px;
+    margin-top: 14px;
+    place-items: center;
+    align-content: center;
+    padding: 18px;
+    border: 1.5px dashed #b9c2d6;
+    border-radius: 12px;
+    background: #fff;
+    color: var(--muted);
+    cursor: text;
+    text-align: center;
+    transition: 160ms ease;
+}
+
+.excel-paste-zone:hover,
+.excel-paste-zone:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(98, 91, 246, 0.09);
+}
+
+.excel-paste-zone.has-table {
+    border-color: #9cd6c0;
+    background: #f7fffb;
+}
+
+.excel-paste-zone .paste-icon {
+    margin-bottom: 5px;
+    font-size: 24px;
+}
+
+.excel-paste-zone strong {
+    color: #3b465d;
+    font-size: 13px;
+}
+
+.excel-paste-zone small {
+    margin-top: 4px;
+    color: var(--soft);
+    font-size: 11px;
+}
+
+.excel-table-preview,
+.method-preview-table {
+    margin-top: 12px;
+}
+
+.excel-table-scroll {
+    max-width: 100%;
+    overflow: auto;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    background: #fff;
+}
+
+.excel-data-table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
+    color: #3f4b62;
+    font-size: 12px;
+}
+
+.excel-data-table td {
+    min-width: 108px;
+    max-width: 280px;
+    padding: 9px 10px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+    vertical-align: top;
+}
+
+.excel-data-table tr:first-child td {
+    background: #f6f7fd;
+    color: #303a50;
+    font-weight: 750;
+}
+
+.excel-data-table tr:last-child td {
+    border-bottom: 0;
+}
+
+.excel-data-table td:last-child {
+    border-right: 0;
+}
+
+.editable-table td[contenteditable="true"] {
+    cursor: text;
+}
+
+.editable-table td[contenteditable="true"]:focus {
+    position: relative;
+    z-index: 1;
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+    background: #faf9ff;
+}
+
+.excel-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.excel-clear-button {
+    padding: 8px 11px;
+    border: 0;
+    border-radius: 8px;
+    background: #fff0f3;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.excel-clear-button:hover:not(:disabled) {
+    background: #ffe4e9;
+}
+
+.excel-clear-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.method-preview-table .excel-data-table td {
+    min-width: 86px;
+    padding: 7px 8px;
+    font-size: 11px;
+}
+
+.record-table-summary {
+    margin: 9px 0 0;
+    padding: 7px 9px;
+    border-radius: 8px;
+    background: #f1f0ff;
+    color: var(--primary-dark);
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.record-table-label {
+    margin: 13px 0 7px;
+    color: #3b465d;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.record-table-scroll {
+    margin-top: 0;
+    max-height: 320px;
+}
+
+.record-table-scroll .excel-data-table td {
+    min-width: 96px;
+    padding: 8px 9px;
+}
+
+@media (max-width: 800px) {
+    .excel-panel-heading {
+        display: block;
+    }
+
+    .excel-table-status {
+        display: inline-block;
+        margin-top: 9px;
+    }
+
+    .excel-paste-zone {
+        min-height: 92px;
+    }
+
+    .excel-data-table td {
+        min-width: 90px;
+    }
+}
