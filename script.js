@@ -18,6 +18,14 @@ const elements = {
     experimentDate: document.getElementById("experimentDate"),
     experimentOperation: document.getElementById("experimentOperation"),
     experimentNotes: document.getElementById("experimentNotes"),
+    methodSearch: document.getElementById("methodSearch"),
+    methodTemplateSelect: document.getElementById("methodTemplateSelect"),
+    methodTemplateCount: document.getElementById("methodTemplateCount"),
+    methodPreview: document.getElementById("methodPreview"),
+    methodPreviewTitle: document.getElementById("methodPreviewTitle"),
+    methodPreviewDate: document.getElementById("methodPreviewDate"),
+    methodPreviewText: document.getElementById("methodPreviewText"),
+    copyOperationButton: document.getElementById("copyOperationButton"),
     recordsList: document.getElementById("recordsList"),
     emptyState: document.getElementById("emptyState"),
     recordCountLabel: document.getElementById("recordCountLabel"),
@@ -69,6 +77,9 @@ function bindEvents() {
 
     elements.form.addEventListener("submit", handleFormSubmit);
     elements.recordSearch.addEventListener("input", renderArchiveRecords);
+    elements.methodSearch.addEventListener("input", renderMethodTemplates);
+    elements.methodTemplateSelect.addEventListener("change", updateMethodPreview);
+    elements.copyOperationButton.addEventListener("click", copySelectedOperation);
     elements.exportRecordsButton.addEventListener("click", exportRecords);
     elements.clearRecordsButton.addEventListener("click", clearAllRecords);
 
@@ -190,10 +201,11 @@ function handleFormSubmit(event) {
     }
 
     elements.form.reset();
+    elements.methodSearch.value = "";
     setDefaultDate();
     renderApp();
     elements.sampleName.focus();
-    showToast("实验记录已保存");
+    showToast("实验记录已保存，实验操作已加入历史方法");
 }
 
 function createRecordId() {
@@ -204,10 +216,115 @@ function createRecordId() {
 }
 
 function renderApp() {
+    renderMethodTemplates();
     renderDashboardRecords();
     renderArchiveRecords();
     renderStatistics();
     renderSettings();
+}
+
+function getReusableMethodRecords() {
+    const seenOperations = new Set();
+
+    return records.filter((record) => {
+        const operation = record.operation.trim();
+        if (!operation || operation === "未记录实验操作") {
+            return false;
+        }
+
+        const normalizedOperation = operation.replace(/\s+/g, " ").toLocaleLowerCase("zh-CN");
+        if (seenOperations.has(normalizedOperation)) {
+            return false;
+        }
+
+        seenOperations.add(normalizedOperation);
+        return true;
+    });
+}
+
+function renderMethodTemplates() {
+    const reusableRecords = getReusableMethodRecords();
+    const keyword = elements.methodSearch.value.trim().toLocaleLowerCase("zh-CN");
+    const selectedId = elements.methodTemplateSelect.value;
+    const filteredRecords = reusableRecords.filter((record) => {
+        const searchableText = `${record.sampleName} ${record.experimentDate} ${record.operation}`.toLocaleLowerCase("zh-CN");
+        return searchableText.includes(keyword);
+    });
+
+    elements.methodTemplateSelect.replaceChildren();
+
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+
+    if (reusableRecords.length === 0) {
+        placeholder.textContent = "保存实验记录后可复用方法";
+    } else if (filteredRecords.length === 0) {
+        placeholder.textContent = "没有匹配的历史方法";
+    } else {
+        placeholder.textContent = "请选择一条历史实验记录";
+    }
+
+    elements.methodTemplateSelect.appendChild(placeholder);
+
+    filteredRecords.forEach((record) => {
+        const option = document.createElement("option");
+        option.value = record.id;
+        option.textContent = `${record.sampleName} · ${formatExperimentDate(record.experimentDate)} · ${createSummary(record.operation.replace(/\s+/g, " "), 34)}`;
+        elements.methodTemplateSelect.appendChild(option);
+    });
+
+    const canSearch = reusableRecords.length > 0;
+    elements.methodSearch.disabled = !canSearch;
+    elements.methodTemplateSelect.disabled = filteredRecords.length === 0;
+    elements.methodTemplateCount.textContent = keyword
+        ? `找到 ${filteredRecords.length} 个方法`
+        : `${reusableRecords.length} 个可用方法`;
+
+    if (filteredRecords.some((record) => record.id === selectedId)) {
+        elements.methodTemplateSelect.value = selectedId;
+    }
+
+    updateMethodPreview();
+}
+
+function updateMethodPreview() {
+    const selectedRecord = records.find((record) => record.id === elements.methodTemplateSelect.value);
+
+    if (!selectedRecord) {
+        elements.methodPreview.hidden = true;
+        elements.copyOperationButton.disabled = true;
+        elements.methodPreviewTitle.textContent = "";
+        elements.methodPreviewDate.textContent = "";
+        elements.methodPreviewText.textContent = "";
+        return;
+    }
+
+    elements.methodPreviewTitle.textContent = selectedRecord.sampleName;
+    elements.methodPreviewDate.textContent = formatExperimentDate(selectedRecord.experimentDate);
+    elements.methodPreviewText.textContent = selectedRecord.operation;
+    elements.methodPreview.hidden = false;
+    elements.copyOperationButton.disabled = false;
+}
+
+function copySelectedOperation() {
+    const selectedRecord = records.find((record) => record.id === elements.methodTemplateSelect.value);
+    if (!selectedRecord) {
+        return;
+    }
+
+    const currentOperation = elements.experimentOperation.value.trim();
+    const shouldReplace = !currentOperation
+        || currentOperation === selectedRecord.operation
+        || window.confirm("当前“实验操作”已有内容，是否使用所选历史方法覆盖？");
+
+    if (!shouldReplace) {
+        return;
+    }
+
+    elements.experimentOperation.value = selectedRecord.operation;
+    elements.experimentOperation.setCustomValidity("");
+    elements.experimentOperation.focus();
+    showToast(`已复制“${selectedRecord.sampleName}”的实验操作，可继续修改`);
 }
 
 function renderDashboardRecords() {
@@ -435,6 +552,7 @@ function clearAllRecords() {
     }
 
     elements.recordSearch.value = "";
+    elements.methodSearch.value = "";
     renderApp();
     showToast("全部实验记录已清空");
 }
