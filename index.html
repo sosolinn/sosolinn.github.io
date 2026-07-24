@@ -72,6 +72,35 @@
                                     <input id="experimentDate" type="date" required>
                                 </label>
                             </div>
+
+                            <section class="reuse-panel" aria-labelledby="reuseMethodTitle">
+                                <div class="reuse-heading">
+                                    <div>
+                                        <strong id="reuseMethodTitle">复用历史实验操作</strong>
+                                        <small>从之前保存的方法中选择，一键填入后仍可继续修改。</small>
+                                    </div>
+                                    <span class="template-count" id="methodTemplateCount">0 个可用方法</span>
+                                </div>
+                                <div class="reuse-controls">
+                                    <label class="reuse-field">查找历史方法
+                                        <input id="methodSearch" type="search" placeholder="搜索样本名称或操作内容" autocomplete="off">
+                                    </label>
+                                    <label class="reuse-field">选择历史记录
+                                        <select id="methodTemplateSelect" disabled>
+                                            <option value="">暂无可复用记录</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                <div class="method-preview" id="methodPreview" hidden>
+                                    <div class="method-preview-meta">
+                                        <strong id="methodPreviewTitle"></strong>
+                                        <span id="methodPreviewDate"></span>
+                                    </div>
+                                    <p id="methodPreviewText"></p>
+                                </div>
+                                <button class="reuse-button" id="copyOperationButton" type="button" disabled>复制到实验操作</button>
+                            </section>
+
                             <label class="form-field">实验操作
                                 <textarea id="experimentOperation" rows="8" maxlength="3000" required placeholder="请输入实验步骤、实验条件、处理方法、关键操作参数等……"></textarea>
                                 <small>用于记录完整实验流程与关键参数</small>
