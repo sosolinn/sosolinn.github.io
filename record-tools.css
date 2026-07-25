@@ -1,0 +1,138 @@
+.record-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.record-form-actions .primary-button {
+    width: auto;
+    flex: 1;
+}
+
+.cancel-edit-button {
+    flex: 0 0 auto;
+    padding: 14px 18px;
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--muted);
+    cursor: pointer;
+    font-weight: 750;
+    transition: 160ms ease;
+}
+
+.cancel-edit-button:hover {
+    border-color: var(--primary);
+    color: var(--primary-dark);
+}
+
+.editing-notice {
+    margin: -4px 0 18px;
+    padding: 11px 13px;
+    border: 1px solid #cfcaff;
+    border-radius: 11px;
+    background: #f5f3ff;
+    color: #5148a8;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.editing-badge {
+    background: #fff2d9 !important;
+    color: #a26000 !important;
+}
+
+.record-card {
+    padding-right: 104px;
+}
+
+.record-actions {
+    position: absolute;
+    top: 12px;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.full-list .record-actions {
+    top: 10px;
+    right: 10px;
+}
+
+.edit-button,
+.record-actions .delete-button {
+    position: static;
+    padding: 7px 8px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 750;
+    transition: 150ms ease;
+}
+
+.edit-button {
+    color: var(--primary-dark);
+}
+
+.edit-button:hover {
+    background: var(--primary-soft);
+}
+
+.record-actions .delete-button {
+    color: var(--danger);
+}
+
+.record-actions .delete-button:hover {
+    background: #fff0f3;
+}
+
+.fuzzy-search-hint {
+    display: block;
+    margin-top: 6px;
+    color: var(--soft);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.search-match-badge {
+    display: inline-block;
+    margin-top: 11px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: var(--primary-soft);
+    color: var(--primary-dark);
+    font-size: 10px;
+    font-weight: 800;
+}
+
+@media (max-width: 800px) {
+    .record-form-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .record-form-actions .primary-button,
+    .cancel-edit-button {
+        width: 100%;
+    }
+
+    .record-card,
+    .full-list .record-card {
+        padding-right: 18px;
+        padding-top: 50px;
+    }
+
+    .record-card:first-child,
+    .full-list .record-card:first-child {
+        padding-top: 50px;
+    }
+
+    .record-actions,
+    .full-list .record-actions {
+        top: 10px;
+        right: 10px;
+    }
+}
