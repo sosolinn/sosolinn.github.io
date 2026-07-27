@@ -12,7 +12,9 @@ const legacyBodyHtml = (bodyMatch?.[1] || "").replace(
   ""
 );
 
-const legacyScripts = [mainScript, excelTableScript, recordToolsScript];
+const legacyBundle = [mainScript, excelTableScript, recordToolsScript].join(
+  "\n;\n"
+);
 
 function loadLegacyScripts() {
   if (window.__LABNOTE_NEXT_INITIALIZED__) {
@@ -20,16 +22,19 @@ function loadLegacyScripts() {
   }
 
   try {
-    legacyScripts.forEach((source, index) => {
-      const script = document.createElement("script");
-      script.type = "text/javascript";
-      script.dataset.labnoteLegacy = String(index + 1);
-      script.textContent = source;
-      document.body.appendChild(script);
+    const script = document.createElement("script");
+    script.type = "module";
+    script.dataset.labnoteLegacy = "bundle";
+    script.textContent = legacyBundle;
+    script.addEventListener("error", (event) => {
+      console.error("LabNote 脚本加载失败：", event);
+      window.__LABNOTE_NEXT_INITIALIZED__ = false;
     });
 
+    document.body.appendChild(script);
     window.__LABNOTE_NEXT_INITIALIZED__ = true;
   } catch (error) {
+    window.__LABNOTE_NEXT_INITIALIZED__ = false;
     console.error("LabNote 初始化失败：", error);
   }
 }
